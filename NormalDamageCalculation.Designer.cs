@@ -78,7 +78,7 @@ namespace LimbusDamageCalculationHasUI
             coinAddDot = new Label();
             dotDef = new NumericUpDown();
             label17 = new Label();
-            getFinalDamage = new Button();
+            getAllDamageAndSave = new Button();
             label16 = new Label();
             targetDefLevel = new NumericUpDown();
             targetUseClashDefSkill = new CheckBox();
@@ -94,7 +94,6 @@ namespace LimbusDamageCalculationHasUI
             skillDef = new RadioButton();
             skill3 = new RadioButton();
             skill2 = new RadioButton();
-            getSkillDamage = new Button();
             getAllSkillDmg = new Button();
             settingSkillDmg = new Button();
             saveData = new Button();
@@ -183,11 +182,11 @@ namespace LimbusDamageCalculationHasUI
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(12, 168);
+            label6.Location = new Point(7, 155);
             label6.Name = "label6";
-            label6.Size = new Size(80, 17);
+            label6.Size = new Size(80, 34);
             label6.TabIndex = 37;
-            label6.Text = "额外伤害增加";
+            label6.Text = "额外伤害增加\r\n/减少";
             // 
             // label1
             // 
@@ -416,6 +415,7 @@ namespace LimbusDamageCalculationHasUI
             extraAddDmg.DecimalPlaces = 2;
             extraAddDmg.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
             extraAddDmg.Location = new Point(103, 166);
+            extraAddDmg.Minimum = new decimal(new int[] { 100, 0, 0, int.MinValue });
             extraAddDmg.Name = "extraAddDmg";
             extraAddDmg.Size = new Size(120, 23);
             extraAddDmg.TabIndex = 38;
@@ -571,15 +571,15 @@ namespace LimbusDamageCalculationHasUI
             label17.TabIndex = 54;
             label17.Text = "Dot抗性";
             // 
-            // getFinalDamage
+            // getAllDamageAndSave
             // 
-            getFinalDamage.Location = new Point(22, 336);
-            getFinalDamage.Name = "getFinalDamage";
-            getFinalDamage.Size = new Size(130, 23);
-            getFinalDamage.TabIndex = 56;
-            getFinalDamage.Text = "获取伤害并储存伤害";
-            getFinalDamage.UseVisualStyleBackColor = true;
-            getFinalDamage.Click += GetFinalDamage_Click;
+            getAllDamageAndSave.Location = new Point(22, 336);
+            getAllDamageAndSave.Name = "getAllDamageAndSave";
+            getAllDamageAndSave.Size = new Size(130, 23);
+            getAllDamageAndSave.TabIndex = 56;
+            getAllDamageAndSave.Text = "获取伤害并储存伤害";
+            getAllDamageAndSave.UseVisualStyleBackColor = true;
+            getAllDamageAndSave.Click += GetAllDamageAndSave_Click;
             // 
             // label16
             // 
@@ -633,7 +633,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             // getAllDamgeSum
             // 
-            getAllDamgeSum.Location = new Point(254, 312);
+            getAllDamgeSum.Location = new Point(22, 364);
             getAllDamgeSum.Name = "getAllDamgeSum";
             getAllDamgeSum.Size = new Size(132, 23);
             getAllDamgeSum.TabIndex = 62;
@@ -745,16 +745,6 @@ namespace LimbusDamageCalculationHasUI
             skill2.Text = "技能二";
             skill2.UseVisualStyleBackColor = true;
             // 
-            // getSkillDamage
-            // 
-            getSkillDamage.Location = new Point(22, 365);
-            getSkillDamage.Name = "getSkillDamage";
-            getSkillDamage.Size = new Size(130, 59);
-            getSkillDamage.TabIndex = 66;
-            getSkillDamage.Text = "获取伤害\r\n并根据技能类型\r\n储存伤害";
-            getSkillDamage.UseVisualStyleBackColor = true;
-            getSkillDamage.Click += GetSkillDamage_Click;
-            // 
             // getAllSkillDmg
             // 
             getAllSkillDmg.Location = new Point(22, 463);
@@ -797,7 +787,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             // getSkillData
             // 
-            getSkillData.Location = new Point(254, 340);
+            getSkillData.Location = new Point(254, 336);
             getSkillData.Name = "getSkillData";
             getSkillData.Size = new Size(132, 23);
             getSkillData.TabIndex = 72;
@@ -818,7 +808,6 @@ namespace LimbusDamageCalculationHasUI
             Controls.Add(saveData);
             Controls.Add(settingSkillDmg);
             Controls.Add(getAllSkillDmg);
-            Controls.Add(getSkillDamage);
             Controls.Add(skillType);
             Controls.Add(panel1);
             Controls.Add(getAllDamgeSum);
@@ -827,7 +816,7 @@ namespace LimbusDamageCalculationHasUI
             Controls.Add(targetUseClashDefSkill);
             Controls.Add(label16);
             Controls.Add(targetDefLevel);
-            Controls.Add(getFinalDamage);
+            Controls.Add(getAllDamageAndSave);
             Controls.Add(dotDef);
             Controls.Add(label17);
             Controls.Add(coinAddDot);
@@ -871,7 +860,7 @@ namespace LimbusDamageCalculationHasUI
             MinimizeBox = false;
             Name = "NormalDamageCalculation";
             ShowIcon = false;
-            Text = "巴士伤害计算器1.4";
+            Text = "巴士伤害计算器1.4.2";
             Load += NormalDamageCalculation_Load;
             DragDrop += NormalDamageCalculation_DragDrop;
             DragEnter += NormalDamageCalculation_DragEnter;
@@ -942,7 +931,7 @@ namespace LimbusDamageCalculationHasUI
         private DataGridViewTextBoxColumn Strength;
         private DataGridViewTextBoxColumn Count;
         private DataGridViewTextBoxColumn dotUseCount;
-        private Button getFinalDamage;
+        private Button getAllDamageAndSave;
         private Label label16;
         private NumericUpDown targetDefLevel;
         private CheckBox targetUseClashDefSkill;
@@ -957,7 +946,6 @@ namespace LimbusDamageCalculationHasUI
         private RadioButton skill3;
         private RadioButton skill2;
         private CheckBox isStrongSkill;
-        private Button getSkillDamage;
         private Button getAllSkillDmg;
         private Button settingSkillDmg;
         private DataGridViewTextBoxColumn extraCoinPower;

@@ -10,7 +10,6 @@ namespace LimbusDamageCalculationHasUI
 {
     public partial class NormalDamageCalculation : Form
     {
-        public List<bool> isAllSkillDmg = new();
         public List<float> allDamage = new();
         private List<DotBuffApplidHandler> _dotBuffApplied = new();
         public List<SaveData> saveDatas = new();
@@ -307,12 +306,11 @@ namespace LimbusDamageCalculationHasUI
 
             var isOK = MessageBox.Show($"伤害:\n" +
                 $"{coinDamageText}" +
-                $"总伤害:{maxDamage}" +
+                $"总伤害:{maxDamage:0.0}" +
                 $"\n按下OK记录伤害", "伤害计算结果", MessageBoxButtons.OKCancel);
             if (isOK == DialogResult.OK)
             {
                 allDamage.Add(maxDamage);
-                isAllSkillDmg.Add(false);
             }
         }
 
@@ -414,7 +412,7 @@ namespace LimbusDamageCalculationHasUI
                     }
                     _dotBuffApplied.Clear();
                 }
-                coinDamageText += $"第{i + 1}枚硬币的伤害{coinDamage}\n";
+                coinDamageText += $"第{i + 1}枚硬币的伤害{coinDamage:0.0}\n";
             }
         }
 
@@ -506,7 +504,7 @@ namespace LimbusDamageCalculationHasUI
             if (tooltips.TryGetValue(control, out var tooltip))
                 MessageBox.Show(tooltip.message, tooltip.title);
         }
-        private void GetFinalDamage_Click(object sender, EventArgs e) => GetDamage();
+        private void GetAllDamageAndSave_Click(object sender, EventArgs e) => GetDamage();
         private void TargetUseClashDefSkill_CheckedChanged(object sender, EventArgs e)
         {
             label18.Visible = targetUseClashDefSkill.Checked;
@@ -524,7 +522,7 @@ namespace LimbusDamageCalculationHasUI
                 allDmg += allDamage[i];
             }
             var chickType = MessageBox.Show(allDmgText +
-                $"总伤害:{allDmg}" +
+                $"总伤害:{allDmg:0.0}" +
                 $"\n点击确定后会清空伤害列表,点击取消后不会清空伤害列表", "总伤害显示", MessageBoxButtons.OKCancel);
             switch (chickType)
             {
@@ -572,20 +570,6 @@ namespace LimbusDamageCalculationHasUI
                 }
             }
         }
-        private void GetSkillDamage_Click(object sender, EventArgs e)
-        {
-            GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int targetDefLevel, out int coinChange, out float maxDamage, out string coinDamageText, out DotBuff dotBuff);
-            GetCoinDmg(coinNum, coinAdd, allCoinDamageAdd, attackLevel, targetDefLevel, ref coinChange, ref maxDamage, ref coinDamageText, dotBuff);
-
-            var isOK = MessageBox.Show($"伤害:\n" +
-                        $"{coinDamageText}" +
-                        $"总伤害:{maxDamage}" +
-                        $"\n按下OK记录伤害", "伤害计算结果", MessageBoxButtons.OKCancel);
-            if (isOK == DialogResult.OK)
-            {
-                isAllSkillDmg.Add(true);
-            }
-        }
 
         private void SettingSkillDmg_Click(object sender, EventArgs e)
         {
@@ -615,22 +599,22 @@ namespace LimbusDamageCalculationHasUI
                     {
                         if (skill1.Checked)
                         {
-                            text += $"强化技能一伤害:{settingDmg.strongSkill1 * maxDamage}\n";
+                            text += $"强化技能一伤害:{settingDmg.strongSkill1 * maxDamage:0.0}\n";
                             dmg += settingDmg.strongSkill1 * maxDamage;
                         }
                         if (skill2.Checked)
                         {
-                            text += $"强化技能二伤害:{settingDmg.strongSkill2 * maxDamage}\n";
+                            text += $"强化技能二伤害:{settingDmg.strongSkill2 * maxDamage:0.0}\n";
                             dmg += settingDmg.strongSkill2 * maxDamage;
                         }
                         if (skill3.Checked)
                         {
-                            text += $"强化技能三伤害:{settingDmg.strongSkill3 * maxDamage}\n";
+                            text += $"强化技能三伤害:{settingDmg.strongSkill3 * maxDamage:0.0}\n";
                             dmg += settingDmg.strongSkill3 * maxDamage;
                         }
                         if (skillDef.Checked)
                         {
-                            text += $"强化反击伤害:{settingDmg.strongSkillDef * maxDamage}\n";
+                            text += $"强化反击伤害:{settingDmg.strongSkillDef * maxDamage:0.0}\n";
                             dmg += settingDmg.strongSkillDef * maxDamage;
                         }
                     }
@@ -638,22 +622,22 @@ namespace LimbusDamageCalculationHasUI
                     {
                         if (skill1.Checked)
                         {
-                            text += $"技能一伤害:{settingDmg.skill1 * maxDamage}\n";
+                            text += $"技能一伤害:{settingDmg.skill1 * maxDamage:0.0}\n";
                             dmg += settingDmg.skill1 * maxDamage;
                         }
                         if (skill2.Checked)
                         {
-                            text += $"技能二伤害:{settingDmg.skill2 * maxDamage}\n";
+                            text += $"技能二伤害:{settingDmg.skill2 * maxDamage:0.0}\n";
                             dmg += settingDmg.skill2 * maxDamage;
                         }
                         if (skill3.Checked)
                         {
-                            text += $"技能三伤害:{settingDmg.skill3 * maxDamage}\n";
+                            text += $"技能三伤害:{settingDmg.skill3 * maxDamage:0.0}\n";
                             dmg += settingDmg.skill3 * maxDamage;
                         }
                         if (skillDef.Checked)
                         {
-                            text += $"反击伤害:{settingDmg.skillDef * maxDamage}\n";
+                            text += $"反击伤害:{settingDmg.skillDef * maxDamage:0.0}\n";
                             dmg += settingDmg.skillDef * maxDamage;
                         }
                     }
@@ -661,7 +645,7 @@ namespace LimbusDamageCalculationHasUI
                 }
                 GetShowData(saveDatas[showSaveData]);
                 MessageBox.Show(text +
-                    $"\n累计总伤{dmg}", "总伤计算结果", MessageBoxButtons.OK);
+                    $"\n累计总伤{dmg:0.0}", "总伤计算结果", MessageBoxButtons.OK);
             }
         }
 
