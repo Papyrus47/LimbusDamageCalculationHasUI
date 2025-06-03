@@ -400,11 +400,12 @@ namespace LimbusDamageCalculationHasUI
                 {
                     for (int j = 0; j < dotUseCount; j++)
                     {
-                        coinDamage += dotBuff.DotDamage() * (float)dotDef.Value;
-                        maxDamage += dotBuff.DotDamage() * (float)dotDef.Value;
+                        int dotDmg = dotBuff.DotDamage();
+                        coinDamage += dotDmg * (float)dotDef.Value;
+                        maxDamage += dotDmg * (float)dotDef.Value;
                         dotBuff.Count += (int)dotCoinData["Count", i].Value;
                         dotBuff.Strength += (int)dotCoinData["Strength", i].Value;
-                        if (dotBuff.Strength > 0)
+                        if (dotBuff.Strength >= 0 && dotBuff.Count <= 0)
                             dotBuff.Count = 1;
                         foreach (var x in _dotBuffApplied)
                         {
