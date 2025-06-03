@@ -43,8 +43,8 @@ namespace LimbusDamageCalculationHasUI
             {
                 NormalDamageCalculation normalDamageCalculation = normalDamageCalculations.First();
                 normalDamageCalculation.GetShowData(saveData);
-                normalDamageCalculation.GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int targetDefLevel, out int coinChange, out float maxDamage, out string coinDamageText, out DotBuff dotBuff);
-                normalDamageCalculation.GetCoinDmg(coinNum, coinAdd, allCoinDamageAdd, attackLevel, targetDefLevel, ref coinChange, ref maxDamage, ref coinDamageText, dotBuff);
+                normalDamageCalculation.GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int coinChange, out float maxDamage, out string coinDamageText, out DotBuff dotBuff);
+                normalDamageCalculation.GetCoinDmg(coinNum, coinAdd, allCoinDamageAdd, attackLevel, ref coinChange, ref maxDamage, ref coinDamageText, dotBuff);
 
                 string text = "";
                 if (saveData.isStrongSkillChecked)
@@ -104,8 +104,8 @@ namespace LimbusDamageCalculationHasUI
                     foreach (var saveData in normalDamageCalculation.saveDatas)
                     {
                         normalDamageCalculation.GetShowData(saveData);
-                        normalDamageCalculation.GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int targetDefLevel, out int coinChange, out float maxDamage, out string coinDamageText, out DotBuff dotBuff);
-                        normalDamageCalculation.GetCoinDmg(coinNum, coinAdd, allCoinDamageAdd, attackLevel, targetDefLevel, ref coinChange, ref maxDamage, ref coinDamageText, dotBuff);
+                        normalDamageCalculation.GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int coinChange, out float maxDamage, out string coinDamageText, out DotBuff dotBuff);
+                        normalDamageCalculation.GetCoinDmg(coinNum, coinAdd, allCoinDamageAdd, attackLevel, ref coinChange, ref maxDamage, ref coinDamageText, dotBuff);
                         string text = "";
                         if (saveData.isStrongSkillChecked)
                         {

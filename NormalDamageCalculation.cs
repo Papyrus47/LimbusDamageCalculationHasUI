@@ -12,8 +12,10 @@ namespace LimbusDamageCalculationHasUI
     {
         public List<float> allDamage = new();
         private List<DotBuffApplidHandler> _dotBuffApplied = new();
+        private static int lastUpdateTick = 0;
         public List<SaveData> saveDatas = new();
         public int showSaveData = -1;
+        public bool oldUseChangeData = false;
 
         public delegate void DotBuffApplidHandler(DotBuff dotBuff, ref float maxDamage);
 
@@ -29,7 +31,7 @@ namespace LimbusDamageCalculationHasUI
         }
         public readonly static string skillSetting = AppDomain.CurrentDomain.BaseDirectory;
         // 修改SaveData类，使用可序列化的数据结构保存DataGridView数据
-        public class SaveData : ICloneable
+        public class SaveData : ICloneable, IComparable<SaveData>
         {
             public decimal skillAddDmg;
             public decimal coinChange;
@@ -37,20 +39,17 @@ namespace LimbusDamageCalculationHasUI
             public decimal baseSkillPower;
             public decimal dmgDef;
             public decimal clashCoin;
-            public decimal attackLevel;
+            public decimal attackLevelDel;
             public decimal sinDef;
-            public int breathingAccessoriesIndex;
+            public decimal breathingScale;
 
             public List<Dictionary<string, (object, object)>> showCoinChangeData = new();
             public List<Dictionary<string, (object, object)>> dotCoinDataData = new();
 
             public decimal extraAddDmg;
-            public decimal dmgDefMul;
-            public decimal dmgDefAdd;
             public decimal startStrength;
             public decimal startCount;
             public decimal dotDef;
-            public decimal targetDefLevel;
             public bool targetUseClashDefSkill;
             public decimal targetClashDef;
             public bool skill1Checked;
@@ -69,18 +68,15 @@ namespace LimbusDamageCalculationHasUI
                     baseSkillPower = baseSkillPower,
                     dmgDef = dmgDef,
                     clashCoin = clashCoin,
-                    attackLevel = attackLevel,
+                    attackLevelDel = attackLevelDel,
                     sinDef = sinDef,
-                    breathingAccessoriesIndex = breathingAccessoriesIndex,
+                    breathingScale = breathingScale,
                     showCoinChangeData = showCoinChangeData,
                     dotCoinDataData = dotCoinDataData,
                     extraAddDmg = extraAddDmg,
-                    dmgDefMul = dmgDefMul,
-                    dmgDefAdd = dmgDefAdd,
                     startStrength = startStrength,
                     startCount = startCount,
                     dotDef = dotDef,
-                    targetDefLevel = targetDefLevel,
                     targetUseClashDefSkill = targetUseClashDefSkill,
                     targetClashDef = targetClashDef,
                     skill1Checked = skill1Checked,
@@ -90,6 +86,23 @@ namespace LimbusDamageCalculationHasUI
                     isStrongSkillChecked = isStrongSkillChecked
                 };
                 return saveData;
+            }
+
+            public int CompareTo(SaveData? other)
+            {
+                if (other == null)
+                    return 1;
+                if (isStrongSkillChecked != other.isStrongSkillChecked)
+                    return isStrongSkillChecked ? 1 : -1;
+                if (skill3Checked != other.skill3Checked)
+                    return skill3Checked ? 1 : -1;
+                if (skill2Checked != other.skill2Checked)
+                    return skill2Checked ? 1 : -1;
+                if (skill1Checked != other.skill1Checked)
+                    return skill1Checked ? 1 : -1;
+                if (skillDefChecked != other.skillDefChecked)
+                    return skillDefChecked ? 1 : -1;
+                return 0;
             }
         }
         public NormalDamageCalculation()
@@ -108,6 +121,7 @@ namespace LimbusDamageCalculationHasUI
             }
             if (saveDatas != null)
             {
+                saveDatas.Sort();
                 foreach (var saveData in saveDatas)
                 {
                     GetShowData(saveData);
@@ -125,9 +139,9 @@ namespace LimbusDamageCalculationHasUI
             baseSkillPower.Value = saveData.baseSkillPower;
             dmgDef.Value = saveData.dmgDef;
             clashCoin.Value = saveData.clashCoin;
-            attackLevel.Value = saveData.attackLevel;
+            attackLevel.Value = saveData.attackLevelDel;
             sinDef.Value = saveData.sinDef;
-            breathingAccessories.SelectedIndex = saveData.breathingAccessoriesIndex;
+            breathingScale.Value = saveData.breathingScale;
 
             // 加载DataGridView数据
             showCoinChange.Rows.Clear();
@@ -136,6 +150,7 @@ namespace LimbusDamageCalculationHasUI
                 int newRowIndex = showCoinChange.Rows.Add();
                 foreach (var columnData in rowData)
                 {
+                    oldUseChangeData = true;
                     int columnIndex = showCoinChange.Columns[columnData.Key].Index;
                     DataGridViewCell dataGridViewCell = showCoinChange.Rows[newRowIndex].Cells[columnIndex];
                     dataGridViewCell.ReadOnly = false;
@@ -166,6 +181,7 @@ namespace LimbusDamageCalculationHasUI
                 int newRowIndex = dotCoinData.Rows.Add();
                 foreach (var columnData in rowData)
                 {
+                    oldUseChangeData = true;
                     int columnIndex = dotCoinData.Columns[columnData.Key].Index;
                     DataGridViewCell dataGridViewCell = dotCoinData.Rows[newRowIndex].Cells[columnIndex];
                     dataGridViewCell.ReadOnly = false;
@@ -206,12 +222,9 @@ namespace LimbusDamageCalculationHasUI
             }
 
             extraAddDmg.Value = saveData.extraAddDmg;
-            dmgDefMul.Value = saveData.dmgDefMul;
-            dmgDefAdd.Value = saveData.dmgDefAdd;
             startStrength.Value = saveData.startStrength;
             startCount.Value = saveData.startCount;
             dotDef.Value = saveData.dotDef;
-            targetDefLevel.Value = saveData.targetDefLevel;
             targetUseClashDefSkill.Checked = saveData.targetUseClashDefSkill;
             targetClashDef.Value = saveData.targetClashDef;
             skill1.Checked = saveData.skill1Checked;
@@ -219,6 +232,7 @@ namespace LimbusDamageCalculationHasUI
             skill3.Checked = saveData.skill3Checked;
             skillDef.Checked = saveData.skillDefChecked;
             isStrongSkill.Checked = saveData.isStrongSkillChecked;
+            oldUseChangeData = false;
         }
 
         public void SaveDmgData()
@@ -227,6 +241,7 @@ namespace LimbusDamageCalculationHasUI
             {
                 List<SaveData> saveDatas = new();
                 string result = Interaction.InputBox("保存的名字", "保存");
+                this.saveDatas.Sort();
                 foreach (var saveData in this.saveDatas)
                 {
                     saveDatas.Add(saveData);
@@ -253,9 +268,9 @@ namespace LimbusDamageCalculationHasUI
             saveData.baseSkillPower = baseSkillPower.Value;
             saveData.dmgDef = dmgDef.Value;
             saveData.clashCoin = clashCoin.Value;
-            saveData.attackLevel = attackLevel.Value;
+            saveData.attackLevelDel = attackLevel.Value;
             saveData.sinDef = sinDef.Value;
-            saveData.breathingAccessoriesIndex = breathingAccessories.SelectedIndex;
+            saveData.breathingScale = breathingScale.Value;
 
             // 保存DataGridView数据
             foreach (DataGridViewRow row in showCoinChange.Rows)
@@ -264,6 +279,8 @@ namespace LimbusDamageCalculationHasUI
                 var rowData = new Dictionary<string, (object, object)>();
                 foreach (DataGridViewCell cell in row.Cells)
                 {
+                    if (cell.OwningColumn == showCoinDmg || cell.OwningColumn == showNowCoinPower)
+                        continue;
                     rowData.Add(cell.OwningColumn.Name, (cell.Value, cell.ValueType));
                 }
                 saveData.showCoinChangeData.Add(rowData);
@@ -279,12 +296,9 @@ namespace LimbusDamageCalculationHasUI
                 saveData.dotCoinDataData.Add(rowData);
             }
             saveData.extraAddDmg = extraAddDmg.Value;
-            saveData.dmgDefMul = dmgDefMul.Value;
-            saveData.dmgDefAdd = dmgDefAdd.Value;
             saveData.startStrength = startStrength.Value;
             saveData.startCount = startCount.Value;
             saveData.dotDef = dotDef.Value;
-            saveData.targetDefLevel = targetDefLevel.Value;
             saveData.targetUseClashDefSkill = targetUseClashDefSkill.Checked;
             saveData.targetClashDef = targetClashDef.Value;
             saveData.skill1Checked = skill1.Checked;
@@ -296,13 +310,13 @@ namespace LimbusDamageCalculationHasUI
 
         private void NormalDamageCalculation_Load(object sender, EventArgs e)
         {
-            breathingAccessories.SelectedIndex = 0;
+
         }
 
         private void GetDamage()
         {
-            GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int targetDefLevel, out int coinChange, out float maxDamage, out string coinDamageText, out DotBuff dotBuff);
-            GetCoinDmg(coinNum, coinAdd, allCoinDamageAdd, attackLevel, targetDefLevel, ref coinChange, ref maxDamage, ref coinDamageText, dotBuff);
+            GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int coinChange, out float maxDamage, out string coinDamageText, out DotBuff dotBuff);
+            GetCoinDmg(coinNum, coinAdd, allCoinDamageAdd, attackLevel, ref coinChange, ref maxDamage, ref coinDamageText, dotBuff);
 
             var isOK = MessageBox.Show($"伤害:\n" +
                 $"{coinDamageText}" +
@@ -314,14 +328,13 @@ namespace LimbusDamageCalculationHasUI
             }
         }
 
-        public void GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int targetDefLevel, out int coinChange, out float maxDamage, out string coinDamageText, out DotBuff dotBuff)
+        public void GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int atkLevelDel, out int coinChange, out float maxDamage, out string coinDamageText, out DotBuff dotBuff)
         {
             int baseCount = (int)baseSkillPower.Value;
             coinNum = (int)this.coinNum.Value;
             coinAdd = (int)this.coinChange.Value;
             allCoinDamageAdd = 1 + (float)skillAddDmg.Value;
-            attackLevel = (int)this.attackLevel.Value;
-            targetDefLevel = (int)this.targetDefLevel.Value;
+            atkLevelDel = (int)attackLevel.Value;
             coinChange = baseCount;
             maxDamage = 0;
             coinDamageText = "";
@@ -332,7 +345,7 @@ namespace LimbusDamageCalculationHasUI
             };
         }
 
-        public void GetCoinDmg(int coinNum, int coinAdd, float allCoinDamageAdd, int attackLevel, int targetDefLevel, ref int coinChange, ref float maxDamage, ref string coinDamageText, DotBuff dotBuff)
+        public void GetCoinDmg(int coinNum, int coinAdd, float allCoinDamageAdd, int attackLevel, ref int coinChange, ref float maxDamage, ref string coinDamageText, DotBuff dotBuff)
         {
             for (int i = 0; i < coinNum; i++)
             {
@@ -344,19 +357,13 @@ namespace LimbusDamageCalculationHasUI
                     coinDamageText += $"第{i + 1}枚硬币被摧毁！\n";
                     continue;
                 }
-                float atkAndDefDel = attackLevel - targetDefLevel;
+                float atkAndDefDel = attackLevel;
                 float mulDamage = 1 + ((float)clashCoin.Value * 0.03f) + (atkAndDefDel / (Math.Abs(atkAndDefDel) + 25f));
                 int chaos = int.Parse((string)showCoinChange["chaos", i].Value);
-                float breathe = breathingAccessories.SelectedIndex switch
-                {
-                    1 => 0.7f,
-                    2 => 1f,
-                    3 => 1.5f,
-                    _ => 0.2f,
-                };
+                float breathe = Math.Max((float)breathingScale.Value - 1, 0);
                 if ((bool)showCoinChange["isBreathe", i].Value)
                     mulDamage += breathe;
-                float dmgDef = (float)this.dmgDef.Value * ((float)dmgDefMul.Value) + (float)dmgDefAdd.Value;
+                float dmgDef = (float)this.dmgDef.Value;
                 if (chaos > 0)
                     dmgDef = 2 + (chaos - 1) * 0.5f;
                 mulDamage += dmgDef switch
@@ -394,22 +401,23 @@ namespace LimbusDamageCalculationHasUI
                 maxDamage += coinDamage;
 
                 int dotUseCount = (int)dotCoinData["dotUseCount", i].Value;
-                if (dotUseCount > 0)
+                if (dotUseCount > 0 && showDotDmg.Checked)
                 {
                     for (int j = 0; j < dotUseCount; j++)
                     {
                         int dotDmg = dotBuff.DotDamage();
                         coinDamage += dotDmg * (float)dotDef.Value;
                         maxDamage += dotDmg * (float)dotDef.Value;
-                        dotBuff.Count += (int)dotCoinData["Count", i].Value;
-                        dotBuff.Strength += (int)dotCoinData["Strength", i].Value;
-                        if (dotBuff.Strength >= 0 && dotBuff.Count <= 0)
-                            dotBuff.Count = 1;
                         foreach (var x in _dotBuffApplied)
                         {
                             x?.Invoke(dotBuff, ref maxDamage);
                         }
                     }
+                    dotBuff.Count += (int)dotCoinData["Count", i].Value;
+                    int value = (int)dotCoinData["Strength", i].Value;
+                    if (value > 0)
+                        dotBuff.Count = 1;
+                    dotBuff.Strength += value;
                     _dotBuffApplied.Clear();
                 }
                 coinDamageText += $"第{i + 1}枚硬币的伤害{coinDamage:0.0}\n";
@@ -425,6 +433,7 @@ namespace LimbusDamageCalculationHasUI
         {
             if (coinNum.Value <= 0)
                 return;
+            oldUseChangeData = true;
             dotCoinData.RowCount = showCoinChange.RowCount = (int)coinNum.Value + 1;
 
             foreach (DataGridViewRow coinRow in showCoinChange.Rows)
@@ -436,7 +445,7 @@ namespace LimbusDamageCalculationHasUI
                 coinRow.Cells["addDmg"].ValueType = typeof(float);
 
                 coinRow.Cells["coinLight"].Value = true;
-                coinRow.Cells["isBreathe"].Value = false;
+                coinRow.Cells["isBreathe"].Value = isUseBreath.Checked;
 
                 coinRow.Cells["chaos"].Value = "0";
                 coinRow.Cells["chaos"].ValueType = typeof(string);
@@ -456,6 +465,7 @@ namespace LimbusDamageCalculationHasUI
                 dotRow.Cells["dotUseCount"].Value = 1;
                 dotRow.Cells["dotUseCount"].ValueType = typeof(int);
             }
+            oldUseChangeData = false;
         }
 
         private void CoinNum_ValueChanged(object sender, EventArgs e)
@@ -490,12 +500,9 @@ namespace LimbusDamageCalculationHasUI
                 { label3, ("技能的显示的没有加成的硬币变动值\n如果有什么加成，移步到右边的硬币栏里面", "初始硬币变动值") },
                 { label5, ("本次技能应该增加的伤害值\n如果中途给了易损之类的，请在硬币里面加成，这个和硬币加成都属于第二类乘算伤害", "本次技能加算伤害") },
                 { label6, ("敌人已经挂有的易损之类的\n如果中途给了易损之类的，请在硬币里面加成，这个和硬币加成都属于第二类乘算伤害", "额外伤害增加") },
-                { breathingAccessories, ("第一类乘算伤害的呼吸法,明镜止水加成倍率分别是1.2,1.7,2,2.5", "呼吸法伤害加成") },
                 { label8, ("第一类乘算伤害的拼点次数,每拼点一次增加3%的伤害", "拼点加成") },
                 { label9, ("第一类乘算伤害的攻防等级差,根据攻防等级差/(攻防等级差的绝对值+25)增加伤害", "攻防等级差加成") },
                 { label4, ("硬币应该有的效果都放在这里,有缺什么的可以告诉我", "硬币加算伤害") },
-                { label10, ("物理抗性的乘算增伤", "抗性乘算增伤") },
-                { label13, ("物理抗性的加算增伤", "抗性加算增伤") },
                 { dotStartValue,("Dot的初始值,与Dot的种类,可以计算硬币数量带有施加dot效果的硬币","Dot初始值") },
                 { label17,("破裂默认填1.00,如果有破裂守护等另外说,这里这个是乘算,其他给出来的dot请自行乘以对应罪孽抗性","Dot抗性") }
 
@@ -590,11 +597,12 @@ namespace LimbusDamageCalculationHasUI
                     Strength = (int)startStrength.Value,
                     Count = (int)startCount.Value
                 };
+                saveDatas.Sort();
                 foreach (var data in saveDatas)
                 {
                     GetShowData(data);
-                    GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int targetDefLevel, out int coinChangeTemp, out float maxDamage, out string coinDamageText, out DotBuff dotBuffTemp);
-                    GetCoinDmg(coinNum, coinAdd, allCoinDamageAdd, attackLevel, targetDefLevel, ref coinChangeTemp, ref maxDamage, ref coinDamageText, dotBuffTemp);
+                    GetDmgSetting(out int coinNum, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int coinChange, out float maxDamage, out string coinDamageText, out DotBuff dotBuffTemp);
+                    GetCoinDmg(coinNum, coinAdd, allCoinDamageAdd, attackLevel, ref coinChange, ref maxDamage, ref coinDamageText, dotBuffTemp);
                     if (isStrongSkill.Checked)
                     {
                         if (skill1.Checked)
@@ -695,6 +703,7 @@ namespace LimbusDamageCalculationHasUI
         }
         public void ChangeSaveData(Func<SaveData, bool> check)
         {
+            saveDatas.Sort();
             showSaveData = saveDatas.FindIndex(check.Invoke);
 
             if (showSaveData == -1)
@@ -778,13 +787,111 @@ namespace LimbusDamageCalculationHasUI
 
         private void DamageComparator_Click(object sender, EventArgs e)
         {
-            List<SaveData> saveDatas = new();
-            foreach(var saveData in this.saveDatas)
+            this.saveDatas.Sort();
+            List<SaveData> saveDatas = [];
+            foreach (var saveData in this.saveDatas)
             {
                 saveDatas.Add(saveData.Clone() as SaveData);
             }
             ChartWindow chartWindow = new(saveDatas);
             chartWindow.Show();
+        }
+
+        private void showDotDmg_CheckedChanged(object sender, EventArgs e)
+        {
+            dotDmgPanel.Visible = showDotDmg.Checked;
+        }
+
+        private void dotDef_ValueChanged(object sender, EventArgs e)
+        {
+            ShowCoinChangeData();
+        }
+
+        private void IsUseBreath_CheckedChanged(object sender, EventArgs e)
+        {
+            isBreathe.Visible = isUseBreath.Checked;
+            foreach (DataGridViewRow coinRow in showCoinChange.Rows)
+            {
+                coinRow.Cells["isBreathe"].Value = isUseBreath.Checked;
+            }
+        }
+
+        private void ShowCoinChange_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            ShowCoinChangeData();
+        }
+        private void BaseSkillPower_ValueChanged(object sender, EventArgs e)
+        {
+            ShowCoinChangeData();
+        }
+        private void CoinChange_ValueChanged(object sender, EventArgs e)
+        {
+            ShowCoinChangeData();
+        }
+        private void skillAddDmg_ValueChanged(object sender, EventArgs e)
+        {
+            ShowCoinChangeData();
+        }
+        private void ExtraAddDmg_ValueChanged(object sender, EventArgs e)
+        {
+            ShowCoinChangeData();
+        }
+        private void BreathingScale_ValueChanged(object sender, EventArgs e)
+        {
+            ShowCoinChangeData();
+        }
+        private void attackLevel_ValueChanged(object sender, EventArgs e)
+        {
+            ShowCoinChangeData();
+        }
+        private void NormalDamageCalculation_MouseMove(object sender, MouseEventArgs e)
+        {
+            const int updateInterval = 1000; // 更新间隔，单位为毫秒
+            int currentTick = Environment.TickCount;
+            if (currentTick - lastUpdateTick > updateInterval)
+            {
+                ShowCoinChangeData();
+                lastUpdateTick = currentTick;
+            }
+        }
+        private void ShowCoinChangeData()
+        {
+            if (showCoinChange.Rows.Count > 1 && !oldUseChangeData)
+            {
+                if (coinNum.Value <= 0)
+                    return;
+                dotCoinData.RowCount = showCoinChange.RowCount = (int)coinNum.Value + 1;
+
+                foreach (DataGridViewRow coinRow in showCoinChange.Rows)
+                {
+                    if (coinRow.IsNewRow)
+                        break;
+                    int coinNum = coinRow.Index + 1;
+                    GetDmgSetting(out _, out int coinAdd, out float allCoinDamageAdd, out int attackLevel, out int coinChangeTemp, out float maxDamage, out string coinDamageText, out DotBuff dotBuffTemp);
+                    GetCoinDmg(coinNum, coinAdd, allCoinDamageAdd, attackLevel, ref coinChangeTemp, ref maxDamage, ref coinDamageText, dotBuffTemp);
+                    int coinPower = (int)baseSkillPower.Value;
+                    for (int i = 0; i < coinNum; i++)
+                    {
+                        bool redCoin = (bool)showCoinChange["redCoinD", i].Value;
+                        if ((bool)showCoinChange["coinDestroy", i].Value && !redCoin)
+                        {
+                            continue;
+                        }
+                        else if ((bool)showCoinChange["coinLight", i].Value)
+                        {
+                            if (redCoin)
+                                coinPower += Math.Sign(coinAdd);
+                            else
+                                coinPower += coinAdd;
+
+                            if (showCoinChange.RowCount > i)
+                                coinPower += (int)showCoinChange["extraCoinPower", i].Value * Math.Sign(coinAdd);
+                        }
+                    }
+                    coinRow.Cells["showNowCoinPower"].Value = coinPower;
+                    coinRow.Cells["showCoinDmg"].Value = maxDamage.ToString("0.0");
+                }
+            }
         }
     }
 }

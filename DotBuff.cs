@@ -20,6 +20,8 @@ namespace LimbusDamageCalculationHasUI
             if (Count <= 0)
                 Strength = 0;
             Count--;
+            if(Count < 0)
+                Count = 0;
             return Strength;
         }
     }

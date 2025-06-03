@@ -52,8 +52,9 @@ namespace LimbusDamageCalculationHasUI
             help = new Button();
             sinDef = new NumericUpDown();
             label11 = new Label();
-            breathingAccessories = new ComboBox();
             showCoinChange = new DataGridView();
+            showNowCoinPower = new DataGridViewTextBoxColumn();
+            showCoinDmg = new DataGridViewTextBoxColumn();
             extraCoinPower = new DataGridViewTextBoxColumn();
             addDmg = new DataGridViewTextBoxColumn();
             chaos = new DataGridViewComboBoxColumn();
@@ -62,10 +63,6 @@ namespace LimbusDamageCalculationHasUI
             coinDestroy = new DataGridViewCheckBoxColumn();
             redCoinD = new DataGridViewCheckBoxColumn();
             extraAddDmg = new NumericUpDown();
-            dmgDefMul = new NumericUpDown();
-            label10 = new Label();
-            label13 = new Label();
-            dmgDefAdd = new NumericUpDown();
             startStrength = new NumericUpDown();
             startCount = new NumericUpDown();
             dotStartValue = new Label();
@@ -79,8 +76,6 @@ namespace LimbusDamageCalculationHasUI
             dotDef = new NumericUpDown();
             label17 = new Label();
             getAllDamageAndSave = new Button();
-            label16 = new Label();
-            targetDefLevel = new NumericUpDown();
             targetUseClashDefSkill = new CheckBox();
             targetClashDef = new NumericUpDown();
             label18 = new Label();
@@ -100,6 +95,12 @@ namespace LimbusDamageCalculationHasUI
             generalTooltip = new ToolTip(components);
             saveSkillData = new Button();
             getSkillData = new Button();
+            showDotDmg = new CheckBox();
+            dotDmgPanel = new Panel();
+            breathingScale = new NumericUpDown();
+            label20 = new Label();
+            isUseBreath = new CheckBox();
+            panel2 = new Panel();
             label12 = new Label();
             label19 = new Label();
             ((System.ComponentModel.ISupportInitialize)skillAddDmg).BeginInit();
@@ -112,16 +113,16 @@ namespace LimbusDamageCalculationHasUI
             ((System.ComponentModel.ISupportInitialize)sinDef).BeginInit();
             ((System.ComponentModel.ISupportInitialize)showCoinChange).BeginInit();
             ((System.ComponentModel.ISupportInitialize)extraAddDmg).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dmgDefMul).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dmgDefAdd).BeginInit();
             ((System.ComponentModel.ISupportInitialize)startStrength).BeginInit();
             ((System.ComponentModel.ISupportInitialize)startCount).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dotCoinData).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dotDef).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)targetDefLevel).BeginInit();
             ((System.ComponentModel.ISupportInitialize)targetClashDef).BeginInit();
             panel1.SuspendLayout();
             skillType.SuspendLayout();
+            dotDmgPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)breathingScale).BeginInit();
+            panel2.SuspendLayout();
             SuspendLayout();
             // 
             // label12
@@ -137,7 +138,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             label19.AutoSize = true;
             label19.BackColor = SystemColors.Control;
-            label19.Location = new Point(158, 367);
+            label19.Location = new Point(155, 77);
             label19.Name = "label19";
             label19.Size = new Size(80, 51);
             label19.TabIndex = 70;
@@ -182,11 +183,11 @@ namespace LimbusDamageCalculationHasUI
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(7, 155);
+            label6.Location = new Point(5, 160);
             label6.Name = "label6";
-            label6.Size = new Size(80, 34);
+            label6.Size = new Size(92, 17);
             label6.TabIndex = 37;
-            label6.Text = "额外伤害增加\r\n/减少";
+            label6.Text = "第二类乘算伤害";
             // 
             // label1
             // 
@@ -205,6 +206,7 @@ namespace LimbusDamageCalculationHasUI
             skillAddDmg.Name = "skillAddDmg";
             skillAddDmg.Size = new Size(120, 23);
             skillAddDmg.TabIndex = 11;
+            skillAddDmg.ValueChanged += skillAddDmg_ValueChanged;
             // 
             // coinChange
             // 
@@ -214,6 +216,7 @@ namespace LimbusDamageCalculationHasUI
             coinChange.Name = "coinChange";
             coinChange.Size = new Size(120, 23);
             coinChange.TabIndex = 12;
+            coinChange.ValueChanged += CoinChange_ValueChanged;
             // 
             // coinNum
             // 
@@ -229,12 +232,13 @@ namespace LimbusDamageCalculationHasUI
             baseSkillPower.Name = "baseSkillPower";
             baseSkillPower.Size = new Size(120, 23);
             baseSkillPower.TabIndex = 14;
+            baseSkillPower.ValueChanged += BaseSkillPower_ValueChanged;
             // 
             // label7
             // 
             label7.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label7.AutoSize = true;
-            label7.Location = new Point(242, 84);
+            label7.Location = new Point(245, 84);
             label7.Name = "label7";
             label7.Size = new Size(56, 17);
             label7.TabIndex = 16;
@@ -245,7 +249,7 @@ namespace LimbusDamageCalculationHasUI
             dmgDef.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             dmgDef.DecimalPlaces = 2;
             dmgDef.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            dmgDef.Location = new Point(242, 104);
+            dmgDef.Location = new Point(238, 104);
             dmgDef.Name = "dmgDef";
             dmgDef.Size = new Size(79, 23);
             dmgDef.TabIndex = 17;
@@ -254,7 +258,7 @@ namespace LimbusDamageCalculationHasUI
             // clashCoin
             // 
             clashCoin.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            clashCoin.Location = new Point(103, 240);
+            clashCoin.Location = new Point(103, 216);
             clashCoin.Maximum = new decimal(new int[] { 99, 0, 0, 0 });
             clashCoin.Name = "clashCoin";
             clashCoin.Size = new Size(111, 23);
@@ -264,7 +268,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             label8.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label8.AutoSize = true;
-            label8.Location = new Point(12, 240);
+            label8.Location = new Point(12, 216);
             label8.Name = "label8";
             label8.Size = new Size(56, 17);
             label8.TabIndex = 19;
@@ -274,24 +278,26 @@ namespace LimbusDamageCalculationHasUI
             // 
             label9.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label9.AutoSize = true;
-            label9.Location = new Point(12, 269);
+            label9.Location = new Point(12, 245);
             label9.Name = "label9";
-            label9.Size = new Size(80, 17);
+            label9.Size = new Size(68, 17);
             label9.TabIndex = 21;
-            label9.Text = "自身攻击等级";
+            label9.Text = "攻防等级差";
             // 
             // attackLevel
             // 
             attackLevel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            attackLevel.Location = new Point(103, 269);
+            attackLevel.Location = new Point(103, 245);
             attackLevel.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            attackLevel.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
             attackLevel.Name = "attackLevel";
             attackLevel.Size = new Size(111, 23);
             attackLevel.TabIndex = 20;
+            attackLevel.ValueChanged += attackLevel_ValueChanged;
             // 
             // help
             // 
-            help.Location = new Point(12, 198);
+            help.Location = new Point(7, 100);
             help.Name = "help";
             help.Size = new Size(75, 23);
             help.TabIndex = 24;
@@ -320,31 +326,33 @@ namespace LimbusDamageCalculationHasUI
             label11.TabIndex = 25;
             label11.Text = "罪孽抗性";
             // 
-            // breathingAccessories
-            // 
-            breathingAccessories.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            breathingAccessories.DisplayMember = "0";
-            breathingAccessories.DropDownStyle = ComboBoxStyle.DropDownList;
-            breathingAccessories.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 134);
-            breathingAccessories.FormattingEnabled = true;
-            breathingAccessories.Items.AddRange(new object[] { "普通暴击", "明镜止水", "明镜止水+", "明镜止水++" });
-            breathingAccessories.Location = new Point(109, 198);
-            breathingAccessories.Name = "breathingAccessories";
-            breathingAccessories.RightToLeft = RightToLeft.No;
-            breathingAccessories.Size = new Size(105, 25);
-            breathingAccessories.TabIndex = 27;
-            breathingAccessories.ValueMember = "0";
-            // 
             // showCoinChange
             // 
             showCoinChange.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             showCoinChange.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            showCoinChange.Columns.AddRange(new DataGridViewColumn[] { extraCoinPower, addDmg, chaos, coinLight, isBreathe, coinDestroy, redCoinD });
+            showCoinChange.Columns.AddRange(new DataGridViewColumn[] { showNowCoinPower, showCoinDmg, extraCoinPower, addDmg, chaos, coinLight, isBreathe, coinDestroy, redCoinD });
             showCoinChange.Location = new Point(453, 9);
             showCoinChange.Name = "showCoinChange";
-            showCoinChange.Size = new Size(214, 475);
+            showCoinChange.Size = new Size(580, 475);
             showCoinChange.TabIndex = 36;
+            showCoinChange.CellValueChanged += ShowCoinChange_CellValueChanged;
             showCoinChange.DefaultValuesNeeded += ByCloneCoin_DefaultValuesNeeded;
+            // 
+            // showNowCoinPower
+            // 
+            showNowCoinPower.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+            showNowCoinPower.HeaderText = "显示的硬币点数";
+            showNowCoinPower.Name = "showNowCoinPower";
+            showNowCoinPower.ReadOnly = true;
+            showNowCoinPower.Width = 117;
+            // 
+            // showCoinDmg
+            // 
+            showCoinDmg.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+            showCoinDmg.HeaderText = "硬币累计的伤害";
+            showCoinDmg.Name = "showCoinDmg";
+            showCoinDmg.ReadOnly = true;
+            showCoinDmg.Width = 117;
             // 
             // extraCoinPower
             // 
@@ -391,7 +399,7 @@ namespace LimbusDamageCalculationHasUI
             isBreathe.Resizable = DataGridViewTriState.True;
             isBreathe.SortMode = DataGridViewColumnSortMode.Automatic;
             isBreathe.ToolTipText = "(点击后记得随便点个别的东西更新一下)";
-            isBreathe.Width = 93;
+            isBreathe.Visible = false;
             // 
             // coinDestroy
             // 
@@ -414,57 +422,17 @@ namespace LimbusDamageCalculationHasUI
             // 
             extraAddDmg.DecimalPlaces = 2;
             extraAddDmg.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            extraAddDmg.Location = new Point(103, 166);
+            extraAddDmg.Location = new Point(103, 158);
             extraAddDmg.Minimum = new decimal(new int[] { 100, 0, 0, int.MinValue });
             extraAddDmg.Name = "extraAddDmg";
             extraAddDmg.Size = new Size(120, 23);
             extraAddDmg.TabIndex = 38;
-            // 
-            // dmgDefMul
-            // 
-            dmgDefMul.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            dmgDefMul.DecimalPlaces = 2;
-            dmgDefMul.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            dmgDefMul.Location = new Point(242, 150);
-            dmgDefMul.Name = "dmgDefMul";
-            dmgDefMul.Size = new Size(79, 23);
-            dmgDefMul.TabIndex = 40;
-            dmgDefMul.Value = new decimal(new int[] { 1, 0, 0, 0 });
-            // 
-            // label10
-            // 
-            label10.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label10.AutoSize = true;
-            label10.Location = new Point(242, 130);
-            label10.Name = "label10";
-            label10.Size = new Size(80, 17);
-            label10.TabIndex = 41;
-            label10.Text = "物理乘算增伤";
-            // 
-            // label13
-            // 
-            label13.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label13.AutoSize = true;
-            label13.Location = new Point(242, 178);
-            label13.Name = "label13";
-            label13.Size = new Size(80, 17);
-            label13.TabIndex = 43;
-            label13.Text = "物理加算增伤";
-            // 
-            // dmgDefAdd
-            // 
-            dmgDefAdd.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            dmgDefAdd.DecimalPlaces = 2;
-            dmgDefAdd.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            dmgDefAdd.Location = new Point(242, 198);
-            dmgDefAdd.Name = "dmgDefAdd";
-            dmgDefAdd.Size = new Size(79, 23);
-            dmgDefAdd.TabIndex = 42;
+            extraAddDmg.ValueChanged += ExtraAddDmg_ValueChanged;
             // 
             // startStrength
             // 
             startStrength.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            startStrength.Location = new Point(728, 42);
+            startStrength.Location = new Point(56, 30);
             startStrength.Name = "startStrength";
             startStrength.Size = new Size(120, 23);
             startStrength.TabIndex = 45;
@@ -472,7 +440,7 @@ namespace LimbusDamageCalculationHasUI
             // startCount
             // 
             startCount.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            startCount.Location = new Point(728, 75);
+            startCount.Location = new Point(56, 63);
             startCount.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
             startCount.Minimum = new decimal(new int[] { int.MinValue, 0, 0, int.MinValue });
             startCount.Name = "startCount";
@@ -483,7 +451,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             dotStartValue.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             dotStartValue.AutoSize = true;
-            dotStartValue.Location = new Point(750, 13);
+            dotStartValue.Location = new Point(78, 1);
             dotStartValue.Name = "dotStartValue";
             dotStartValue.Size = new Size(67, 17);
             dotStartValue.TabIndex = 46;
@@ -493,7 +461,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             label14.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label14.AutoSize = true;
-            label14.Location = new Point(690, 44);
+            label14.Location = new Point(18, 32);
             label14.Name = "label14";
             label14.Size = new Size(32, 17);
             label14.TabIndex = 47;
@@ -503,7 +471,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             label15.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label15.AutoSize = true;
-            label15.Location = new Point(690, 77);
+            label15.Location = new Point(18, 65);
             label15.Name = "label15";
             label15.Size = new Size(32, 17);
             label15.TabIndex = 48;
@@ -514,7 +482,7 @@ namespace LimbusDamageCalculationHasUI
             dotCoinData.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             dotCoinData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dotCoinData.Columns.AddRange(new DataGridViewColumn[] { Strength, Count, dotUseCount });
-            dotCoinData.Location = new Point(728, 111);
+            dotCoinData.Location = new Point(56, 99);
             dotCoinData.Name = "dotCoinData";
             dotCoinData.Size = new Size(120, 373);
             dotCoinData.TabIndex = 52;
@@ -544,7 +512,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             coinAddDot.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             coinAddDot.AutoSize = true;
-            coinAddDot.Location = new Point(690, 111);
+            coinAddDot.Location = new Point(18, 99);
             coinAddDot.Name = "coinAddDot";
             coinAddDot.Size = new Size(32, 34);
             coinAddDot.TabIndex = 53;
@@ -555,17 +523,18 @@ namespace LimbusDamageCalculationHasUI
             dotDef.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             dotDef.DecimalPlaces = 2;
             dotDef.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-            dotDef.Location = new Point(355, 198);
+            dotDef.Location = new Point(355, 180);
             dotDef.Name = "dotDef";
             dotDef.Size = new Size(79, 23);
             dotDef.TabIndex = 55;
             dotDef.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            dotDef.ValueChanged += dotDef_ValueChanged;
             // 
             // label17
             // 
             label17.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label17.AutoSize = true;
-            label17.Location = new Point(355, 178);
+            label17.Location = new Point(355, 160);
             label17.Name = "label17";
             label17.Size = new Size(55, 17);
             label17.TabIndex = 54;
@@ -573,32 +542,13 @@ namespace LimbusDamageCalculationHasUI
             // 
             // getAllDamageAndSave
             // 
-            getAllDamageAndSave.Location = new Point(22, 336);
+            getAllDamageAndSave.Location = new Point(3, 46);
             getAllDamageAndSave.Name = "getAllDamageAndSave";
-            getAllDamageAndSave.Size = new Size(130, 23);
+            getAllDamageAndSave.Size = new Size(243, 23);
             getAllDamageAndSave.TabIndex = 56;
-            getAllDamageAndSave.Text = "获取伤害并储存伤害";
+            getAllDamageAndSave.Text = "获取伤害并储存伤害,与每个硬币的伤害";
             getAllDamageAndSave.UseVisualStyleBackColor = true;
             getAllDamageAndSave.Click += GetAllDamageAndSave_Click;
-            // 
-            // label16
-            // 
-            label16.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label16.AutoSize = true;
-            label16.Location = new Point(12, 298);
-            label16.Name = "label16";
-            label16.Size = new Size(80, 17);
-            label16.TabIndex = 58;
-            label16.Text = "目标防御等级";
-            // 
-            // targetDefLevel
-            // 
-            targetDefLevel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            targetDefLevel.Location = new Point(103, 298);
-            targetDefLevel.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            targetDefLevel.Name = "targetDefLevel";
-            targetDefLevel.Size = new Size(111, 23);
-            targetDefLevel.TabIndex = 57;
             // 
             // targetUseClashDefSkill
             // 
@@ -633,7 +583,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             // getAllDamgeSum
             // 
-            getAllDamgeSum.Location = new Point(22, 364);
+            getAllDamgeSum.Location = new Point(3, 73);
             getAllDamgeSum.Name = "getAllDamgeSum";
             getAllDamgeSum.Size = new Size(132, 23);
             getAllDamgeSum.TabIndex = 62;
@@ -747,9 +697,9 @@ namespace LimbusDamageCalculationHasUI
             // 
             // getAllSkillDmg
             // 
-            getAllSkillDmg.Location = new Point(22, 463);
+            getAllSkillDmg.Location = new Point(3, 186);
             getAllSkillDmg.Name = "getAllSkillDmg";
-            getAllSkillDmg.Size = new Size(226, 24);
+            getAllSkillDmg.Size = new Size(243, 24);
             getAllSkillDmg.TabIndex = 67;
             getAllSkillDmg.Text = "获取暂存所有技能伤害之和\r\n";
             getAllSkillDmg.UseVisualStyleBackColor = true;
@@ -757,9 +707,9 @@ namespace LimbusDamageCalculationHasUI
             // 
             // settingSkillDmg
             // 
-            settingSkillDmg.Location = new Point(22, 442);
+            settingSkillDmg.Location = new Point(3, 158);
             settingSkillDmg.Name = "settingSkillDmg";
-            settingSkillDmg.Size = new Size(226, 23);
+            settingSkillDmg.Size = new Size(243, 23);
             settingSkillDmg.TabIndex = 68;
             settingSkillDmg.Text = "设置伤害之和的统计方法";
             settingSkillDmg.UseVisualStyleBackColor = true;
@@ -767,7 +717,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             // saveData
             // 
-            saveData.Location = new Point(158, 336);
+            saveData.Location = new Point(141, 17);
             saveData.Name = "saveData";
             saveData.Size = new Size(90, 23);
             saveData.TabIndex = 69;
@@ -777,9 +727,9 @@ namespace LimbusDamageCalculationHasUI
             // 
             // saveSkillData
             // 
-            saveSkillData.Location = new Point(22, 421);
+            saveSkillData.Location = new Point(3, 129);
             saveSkillData.Name = "saveSkillData";
-            saveSkillData.Size = new Size(226, 23);
+            saveSkillData.Size = new Size(243, 23);
             saveSkillData.TabIndex = 71;
             saveSkillData.Text = "暂存目前技能面板";
             saveSkillData.UseVisualStyleBackColor = true;
@@ -787,7 +737,7 @@ namespace LimbusDamageCalculationHasUI
             // 
             // getSkillData
             // 
-            getSkillData.Location = new Point(254, 336);
+            getSkillData.Location = new Point(3, 17);
             getSkillData.Name = "getSkillData";
             getSkillData.Size = new Size(132, 23);
             getSkillData.TabIndex = 72;
@@ -795,49 +745,106 @@ namespace LimbusDamageCalculationHasUI
             getSkillData.UseVisualStyleBackColor = true;
             getSkillData.Click += GetSkillData_Click;
             // 
+            // showDotDmg
+            // 
+            showDotDmg.AutoSize = true;
+            showDotDmg.Location = new Point(349, 136);
+            showDotDmg.Name = "showDotDmg";
+            showDotDmg.Size = new Size(98, 21);
+            showDotDmg.TabIndex = 73;
+            showDotDmg.Text = "显示Dot伤害";
+            showDotDmg.UseVisualStyleBackColor = true;
+            showDotDmg.CheckedChanged += showDotDmg_CheckedChanged;
+            // 
+            // dotDmgPanel
+            // 
+            dotDmgPanel.Controls.Add(coinAddDot);
+            dotDmgPanel.Controls.Add(dotCoinData);
+            dotDmgPanel.Controls.Add(label15);
+            dotDmgPanel.Controls.Add(label14);
+            dotDmgPanel.Controls.Add(dotStartValue);
+            dotDmgPanel.Controls.Add(startStrength);
+            dotDmgPanel.Controls.Add(startCount);
+            dotDmgPanel.Location = new Point(1038, 7);
+            dotDmgPanel.Name = "dotDmgPanel";
+            dotDmgPanel.RightToLeft = RightToLeft.No;
+            dotDmgPanel.Size = new Size(191, 486);
+            dotDmgPanel.TabIndex = 74;
+            dotDmgPanel.Visible = false;
+            // 
+            // breathingScale
+            // 
+            breathingScale.DecimalPlaces = 2;
+            breathingScale.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
+            breathingScale.Location = new Point(103, 187);
+            breathingScale.Name = "breathingScale";
+            breathingScale.Size = new Size(120, 23);
+            breathingScale.TabIndex = 76;
+            breathingScale.Value = new decimal(new int[] { 12, 0, 0, 65536 });
+            breathingScale.ValueChanged += BreathingScale_ValueChanged;
+            // 
+            // label20
+            // 
+            label20.AutoSize = true;
+            label20.Location = new Point(22, 189);
+            label20.Name = "label20";
+            label20.Size = new Size(56, 17);
+            label20.TabIndex = 75;
+            label20.Text = "暴击倍率";
+            // 
+            // isUseBreath
+            // 
+            isUseBreath.AutoSize = true;
+            isUseBreath.Location = new Point(242, 136);
+            isUseBreath.Name = "isUseBreath";
+            isUseBreath.Size = new Size(75, 21);
+            isUseBreath.TabIndex = 77;
+            isUseBreath.Text = "暴击开关";
+            isUseBreath.UseVisualStyleBackColor = true;
+            isUseBreath.CheckedChanged += IsUseBreath_CheckedChanged;
+            // 
+            // panel2
+            // 
+            panel2.Controls.Add(getSkillData);
+            panel2.Controls.Add(saveSkillData);
+            panel2.Controls.Add(label19);
+            panel2.Controls.Add(saveData);
+            panel2.Controls.Add(settingSkillDmg);
+            panel2.Controls.Add(getAllSkillDmg);
+            panel2.Controls.Add(getAllDamgeSum);
+            panel2.Controls.Add(getAllDamageAndSave);
+            panel2.Controls.Add(help);
+            panel2.Location = new Point(5, 274);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(249, 213);
+            panel2.TabIndex = 78;
+            // 
             // NormalDamageCalculation
             // 
             AllowDrop = true;
             AutoScaleDimensions = new SizeF(8F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImageLayout = ImageLayout.None;
-            ClientSize = new Size(860, 499);
-            Controls.Add(getSkillData);
-            Controls.Add(saveSkillData);
-            Controls.Add(label19);
-            Controls.Add(saveData);
-            Controls.Add(settingSkillDmg);
-            Controls.Add(getAllSkillDmg);
+            ClientSize = new Size(1226, 499);
+            Controls.Add(panel2);
+            Controls.Add(isUseBreath);
+            Controls.Add(breathingScale);
+            Controls.Add(label20);
+            Controls.Add(dotDmgPanel);
+            Controls.Add(showDotDmg);
             Controls.Add(skillType);
             Controls.Add(panel1);
-            Controls.Add(getAllDamgeSum);
             Controls.Add(label18);
             Controls.Add(targetClashDef);
             Controls.Add(targetUseClashDefSkill);
-            Controls.Add(label16);
-            Controls.Add(targetDefLevel);
-            Controls.Add(getAllDamageAndSave);
             Controls.Add(dotDef);
             Controls.Add(label17);
-            Controls.Add(coinAddDot);
-            Controls.Add(dotCoinData);
-            Controls.Add(label15);
-            Controls.Add(label14);
-            Controls.Add(dotStartValue);
-            Controls.Add(startStrength);
-            Controls.Add(startCount);
-            Controls.Add(label13);
-            Controls.Add(dmgDefAdd);
-            Controls.Add(label10);
-            Controls.Add(dmgDefMul);
             Controls.Add(label12);
             Controls.Add(extraAddDmg);
             Controls.Add(label6);
             Controls.Add(showCoinChange);
-            Controls.Add(breathingAccessories);
             Controls.Add(sinDef);
             Controls.Add(label11);
-            Controls.Add(help);
             Controls.Add(label9);
             Controls.Add(attackLevel);
             Controls.Add(label8);
@@ -860,12 +867,13 @@ namespace LimbusDamageCalculationHasUI
             MinimizeBox = false;
             Name = "NormalDamageCalculation";
             ShowIcon = false;
-            Text = "巴士伤害计算器1.4.2";
+            Text = "巴士伤害计算器1.5";
             Load += NormalDamageCalculation_Load;
             DragDrop += NormalDamageCalculation_DragDrop;
             DragEnter += NormalDamageCalculation_DragEnter;
             HelpRequested += NormalDamageCalculation_HelpRequested;
             Paint += NormalDamageCalculation_Paint;
+            MouseMove += NormalDamageCalculation_MouseMove;
             ((System.ComponentModel.ISupportInitialize)skillAddDmg).EndInit();
             ((System.ComponentModel.ISupportInitialize)coinChange).EndInit();
             ((System.ComponentModel.ISupportInitialize)coinNum).EndInit();
@@ -876,17 +884,19 @@ namespace LimbusDamageCalculationHasUI
             ((System.ComponentModel.ISupportInitialize)sinDef).EndInit();
             ((System.ComponentModel.ISupportInitialize)showCoinChange).EndInit();
             ((System.ComponentModel.ISupportInitialize)extraAddDmg).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dmgDefMul).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dmgDefAdd).EndInit();
             ((System.ComponentModel.ISupportInitialize)startStrength).EndInit();
             ((System.ComponentModel.ISupportInitialize)startCount).EndInit();
             ((System.ComponentModel.ISupportInitialize)dotCoinData).EndInit();
             ((System.ComponentModel.ISupportInitialize)dotDef).EndInit();
-            ((System.ComponentModel.ISupportInitialize)targetDefLevel).EndInit();
             ((System.ComponentModel.ISupportInitialize)targetClashDef).EndInit();
             panel1.ResumeLayout(false);
             skillType.ResumeLayout(false);
             skillType.PerformLayout();
+            dotDmgPanel.ResumeLayout(false);
+            dotDmgPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)breathingScale).EndInit();
+            panel2.ResumeLayout(false);
+            panel2.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -908,17 +918,12 @@ namespace LimbusDamageCalculationHasUI
         private Button help;
         private NumericUpDown sinDef;
         private Label label11;
-        private ComboBox breathingAccessories;
         private DataGridView showCoinChange;
         private NumericUpDown extraAddDmg;
         private Label label3;
         private Label label4;
         private Label label5;
         private Label label6;
-        private NumericUpDown dmgDefMul;
-        private Label label10;
-        private Label label13;
-        private NumericUpDown dmgDefAdd;
         private NumericUpDown startStrength;
         private NumericUpDown startCount;
         private Label dotStartValue;
@@ -932,8 +937,6 @@ namespace LimbusDamageCalculationHasUI
         private DataGridViewTextBoxColumn Count;
         private DataGridViewTextBoxColumn dotUseCount;
         private Button getAllDamageAndSave;
-        private Label label16;
-        private NumericUpDown targetDefLevel;
         private CheckBox targetUseClashDefSkill;
         private NumericUpDown targetClashDef;
         private Label label18;
@@ -948,6 +951,19 @@ namespace LimbusDamageCalculationHasUI
         private CheckBox isStrongSkill;
         private Button getAllSkillDmg;
         private Button settingSkillDmg;
+        private Button saveData;
+        private ToolTip generalTooltip;
+        private Button saveSkillData;
+        private Button getSkillData;
+        private Button damageComparator;
+        private CheckBox showDotDmg;
+        private Panel dotDmgPanel;
+        private NumericUpDown breathingScale;
+        private Label label20;
+        private CheckBox isUseBreath;
+        private Panel panel2;
+        private DataGridViewTextBoxColumn showNowCoinPower;
+        private DataGridViewTextBoxColumn showCoinDmg;
         private DataGridViewTextBoxColumn extraCoinPower;
         private DataGridViewTextBoxColumn addDmg;
         private DataGridViewComboBoxColumn chaos;
@@ -955,10 +971,5 @@ namespace LimbusDamageCalculationHasUI
         private DataGridViewCheckBoxColumn isBreathe;
         private DataGridViewCheckBoxColumn coinDestroy;
         private DataGridViewCheckBoxColumn redCoinD;
-        private Button saveData;
-        private ToolTip generalTooltip;
-        private Button saveSkillData;
-        private Button getSkillData;
-        private Button damageComparator;
     }
 }
